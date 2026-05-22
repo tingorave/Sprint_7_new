@@ -23,6 +23,7 @@ sprint_7/
       orders_api.py           # обёртки над API заказов
     utils/
       generators.py           # генераторы тестовых данных (логины и т.п.)
+      helpers_orders.py       # вспомогательные функции для заказов 
     data/
       messages.py             # константы с текстами сообщений API
   tests/
