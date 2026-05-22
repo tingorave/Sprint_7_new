@@ -2,19 +2,7 @@ import allure
 import pytest
 
 from src.api.orders_api import OrdersAPI
-
-
-def get_base_order_payload():
-    return {
-        "firstName": "Валентин",
-        "lastName": "Миханоша",
-        "address": "Москва, Тверская 1",
-        "metroStation": "1",
-        "phone": "+79990000000",
-        "rentTime": 5,
-        "deliveryDate": "2026-05-13",
-        "comment": "Автотест заказа",
-    }
+from src.utils.helpers_orders import get_base_order_payload
 
 
 @allure.suite("Заказы")

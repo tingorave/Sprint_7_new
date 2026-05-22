@@ -3,26 +3,7 @@ import pytest
 
 from src.api.orders_api import OrdersAPI
 from src.data import messages
-
-
-def _create_order_and_get_track():
-    payload = {
-        "firstName": "Валентин",
-        "lastName": "Миханоша",
-        "address": "Москва, Тверская 1",
-        "metroStation": "1",
-        "phone": "+79990000000",
-        "rentTime": 5,
-        "deliveryDate": "2026-05-13",
-        "comment": "Автотест: получить заказ по треку",
-        "color": ["BLACK"],
-    }
-    response = OrdersAPI.create_order(payload)
-    assert response.status_code == 201
-    body = response.json()
-    track = body.get("track")
-    assert isinstance(track, int)
-    return track
+from src.utils.helpers_orders import create_order
 
 
 @allure.suite("Заказы")
@@ -36,7 +17,7 @@ class TestOrdersGetByTrack:
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_order_by_valid_track(self):
         with allure.step("Создаём заказ и получаем его track"):
-            track = _create_order_and_get_track()
+            track = create_order(comment="Автотест: получить заказ по треку")
 
         with allure.step("Запрашиваем заказ по этому треку"):
             response = OrdersAPI.get_order_by_track(track)

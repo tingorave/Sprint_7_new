@@ -4,38 +4,7 @@ import pytest
 from src.api.courier_api import CourierAPI
 from src.api.orders_api import OrdersAPI
 from src.data import messages
-
-
-def _create_order():
-    """Вспомогательная функция для создания заказа и получения его track."""
-    payload = {
-        "firstName": "Валентин",
-        "lastName": "Миханоша",
-        "address": "Москва, Тверская 1",
-        "metroStation": "1",
-        "phone": "+79990000000",
-        "rentTime": 5,
-        "deliveryDate": "2026-05-13",
-        "comment": "Автотест: принятие заказа",
-        "color": ["BLACK"],
-    }
-    response = OrdersAPI.create_order(payload)
-    assert response.status_code == 201
-    body = response.json()
-    track = body.get("track")
-    assert isinstance(track, int)
-    return track
-
-
-def _get_order_id_by_track(track):
-    """Получение id заказа по его track (для accept нужна именно id)."""
-    response = OrdersAPI.get_order_by_track(track)
-    assert response.status_code == 200
-    body = response.json()
-    order = body.get("order") or body
-    order_id = order.get("id")
-    assert isinstance(order_id, int)
-    return order_id
+from src.utils.helpers_orders import create_order, get_order_id_by_track
 
 
 @allure.suite("Заказы")
@@ -61,10 +30,10 @@ class TestOrdersAccept:
             assert isinstance(courier_id, int)
 
         with allure.step("Создаём новый заказ и получаем его track"):
-            track = _create_order()
+            track = create_order(comment="Автотест: принятие заказа")
 
         with allure.step("Получаем id заказа по его track"):
-            order_id = _get_order_id_by_track(track)
+            order_id = get_order_id_by_track(track)
 
         with allure.step("Принимаем заказ от имени курьера"):
             response = OrdersAPI.accept_order(order_id, courier_id)
@@ -110,10 +79,10 @@ class TestOrdersAccept:
     @allure.severity(allure.severity_level.NORMAL)
     def test_accept_order_nonexistent_courier_id(self):
         with allure.step("Создаём новый заказ и получаем его track"):
-            track = _create_order()
+            track = create_order(comment="Автотест: принятие заказа")
 
         with allure.step("Получаем id заказа по его track"):
-            order_id = _get_order_id_by_track(track)
+            order_id = get_order_id_by_track(track)
 
         nonexistent_courier_id = 99999999
 
@@ -133,10 +102,10 @@ class TestOrdersAccept:
     @allure.severity(allure.severity_level.NORMAL)
     def test_accept_order_without_courier_id(self):
         with allure.step("Создаём новый заказ и получаем его track"):
-            track = _create_order()
+            track = create_order(comment="Автотест: принятие заказа")
 
         with allure.step("Получаем id заказа по его track"):
-            order_id = _get_order_id_by_track(track)
+            order_id = get_order_id_by_track(track)
 
         with allure.step("Пробуем принять заказ без courierId"):
             response = OrdersAPI.accept_order(order_id, courier_id=None)

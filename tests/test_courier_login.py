@@ -104,12 +104,7 @@ class TestCourierLogin:
         with allure.step("Пробуем залогиниться без пароля"):
             response = CourierAPI.login_courier(login_payload)
 
-        status = response.status_code
-        # Защита от нестабильности окружения: если сервис вернул 5xx, тест пропускаем
-        if 500 <= status < 600:
-            pytest.skip(f"Сервис вернул {status} вместо 400 — окружение нестабильно")
-
         with allure.step("Проверяем код ответа и сообщение об ошибке"):
-            assert status == 400
+            assert response.status_code == 400
             body = response.json()
             assert body["message"] == messages.COURIER_LOGIN_NOT_ENOUGH_DATA
